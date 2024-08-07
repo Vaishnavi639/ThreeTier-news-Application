@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: news-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: news-app
+  template:
+    metadata:
+      labels:
+        app: news-app
+    spec:
+      restartPolicy: Always            # Always, OnFailure, Never
+      containers:
+      - name: news
+        image: vaishnavi639/news:v1
+        imagePullPolicy: Always # Always, IfNotPresent, Never
+        ports:
+        - containerPort: 3000
