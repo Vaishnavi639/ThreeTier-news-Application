@@ -1,26 +1,28 @@
-# Stage 1: Build
+# Stage 1: Install dependencies
 FROM node:14-alpine AS build
 
 WORKDIR /app
 
+# Copy package.json and package-lock.json for dependency installation
 COPY package*.json ./
 
-RUN npm install
+# Install dependencies without devDependencies for production
+RUN npm install --omit=dev
 
+# Copy all source files
 COPY . .
 
-RUN npm run build
-
-# Stage 2: Production
+# Stage 2: Production image
 FROM node:14-alpine
 
 WORKDIR /app
 
-COPY --from=build /app/build ./build
+# Copy only the necessary files from the build stage
+COPY --from=build /app /app
 
-RUN npm install -g serve
-
+# Expose the application port
 EXPOSE 3000
 
-CMD ["serve", "-s", "build", "-l", "3000"]
+# Start the Express.js server
+CMD ["node", "server.js"]
 
